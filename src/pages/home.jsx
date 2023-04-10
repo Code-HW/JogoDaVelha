@@ -18,7 +18,9 @@ const boardDefaultValues = {
   playerWiner: null,
   fieldsWiner: null,
   lastPlayer: null,
-  fileds: {
+  gameMode: "M",
+  startedGame: false,
+  fields: {
     a: null,
     b: null,
     c: null,
@@ -30,6 +32,24 @@ const boardDefaultValues = {
     i: null,
   },
 };
+
+const ramdowPlay = (fields) => {
+  const fildsAvailable = Object.entries(fields).filter(
+    ([key, value]) => value === null
+  );
+
+  return fildsAvailable[Math.floor(Math.random() * fildsAvailable.length)][0];
+};
+
+/* const winPlay = (fields) => {
+  const fildsAvailable = Object.entries(fields).filter(
+    ([key, value]) => value === null
+  );
+
+  return fildsAvailable[Math.floor(Math.random() * fildsAvailable.length)][0];
+}; */
+
+const machinePlays = [ramdowPlay];
 
 const checkWiner = (board) => {
   const fieldVictory = winer.find(
@@ -45,10 +65,20 @@ const checkWiner = (board) => {
   };
 };
 
+const machinePlay = (board) => {
+  const filedPlay = machinePlays.find((action) => action(board.fields))(
+    board.fields
+  );
+
+  return filedPlay;
+};
+
 //componentizar
 function Home() {
   const [player, setPlayer] = useState("X");
   const [board, setBoard] = useState(boardDefaultValues);
+
+  const machine = player === "X" ? "O" : "X";
 
   const handleClick = (id) => {
     if (!player) {
@@ -61,7 +91,7 @@ function Home() {
       return;
     }
 
-    if (board.fileds[id]) {
+    if (board.fields[id]) {
       window.alert("Campo ja preenchido!");
       return;
     }
@@ -69,24 +99,32 @@ function Home() {
     setBoard({
       ...board,
       lastPlayer: player,
-      fileds: { ...board.fileds, [id]: player },
+      startedGame: true,
+      fields: { ...board.fields, [id]: player },
     });
   };
 
-  /* const handleChangeSelect = (e) => {
+  const handleChangePlayerSelect = (e) => {
     setPlayer(e.target.value);
-  }; */
+  };
+
+  const handleChangeGameModeSelect = (e) => {
+    setBoard({
+      ...board,
+      gameMode: e.target.value,
+    });
+  };
 
   const handleResetBoard = () => {
     setBoard(boardDefaultValues);
   };
 
   useEffect(() => {
-    if (!board.state) return;
+    if (!board.state || !board.gameMode) return;
 
-    const result = checkWiner(board.fileds);
+    const result = checkWiner(board.fields);
 
-    if (player === board.lastPlayer) {
+    if (board.gameMode === "P" && player === board.lastPlayer) {
       setPlayer(player === "X" ? "O" : "X");
     }
 
@@ -102,38 +140,72 @@ function Home() {
       return;
     }
 
-    if (Object.values(board.fileds).every((x) => x)) {
+    if (Object.values(board.fields).every((x) => x)) {
       setBoard({
         ...board,
         state: false,
         playerWiner: "V",
       });
       console.log(`O jogo deu velha!`);
+      return;
+    }
+
+    if (board.gameMode === "M" && player === board.lastPlayer) {
+      const fieldPlay = machinePlay(board);
+      setBoard({
+        ...board,
+        lastPlayer: machine,
+        fields: { ...board.fields, [fieldPlay]: machine },
+      });
     }
   }, [board]);
 
   return (
     <div className="container">
-      <div className="status">
-        <button className="reset" onClick={handleResetBoard}>
-          REINICIAR
-        </button>
-        {/* <select disabled={player} onChange={handleChangeSelect} value={player}>
-          <option value="">Esolha o Jogador</option>
-          <option value="X">Jogador X</option>
-          <option value="O">Jogador O</option>
-        </select> */}
-        {player ? <span>Jogador {player} </span> : null}
-      </div>
+      <aside className="sidebar">
+        <div className="top">
+          <div className="header">Jogo da Velha</div>
+
+          <div className="item">
+            <p>Modo de jogo: </p>
+            <select
+              disabled={board.startedGame}
+              onChange={handleChangeGameModeSelect}
+              value={board.gameMode}
+            >
+              <option value="M">Jogador vs Maquina</option>
+              <option value="P">Jogador vs Jogador</option>
+            </select>
+          </div>
+
+          <div className="item">
+            <p>Jogador: </p>
+
+            <select
+              disabled={board.startedGame}
+              onChange={handleChangePlayerSelect}
+              value={player}
+            >
+              <option value="X">Jogador X</option>
+              <option value="O">Jogador O</option>
+            </select>
+          </div>
+        </div>
+        <div className="bottom">
+          <button className="reset" onClick={handleResetBoard}>
+            REINICIAR
+          </button>
+        </div>
+      </aside>
       <div className="board">
-        {Object.keys(board.fileds).map((key, index) => (
+        {Object.keys(board.fields).map((key, index) => (
           <Square
             color={
               !board.state &&
               board.fieldsWiner?.find((x) => x === key) &&
               "green"
             }
-            value={board.fileds[key]}
+            value={board.fields[key]}
             id={`field-${key}`}
             key={`field-${key}`}
             event={() => board.state && handleClick(key)}

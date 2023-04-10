@@ -1,15 +1,8 @@
 .container {
   display: grid;
-
-  place-items: center;
+  height: 100vh;
+  grid-template-columns: 1fr 3fr;
   grid-gap: 32px;
-}
-
-.status {
-  display: flex;
-  flex-direction: column;
-  font-size: 32px;
-  font-weight: 700;
 }
 
 .board {
@@ -20,10 +13,63 @@
   height: 650px;
   grid-gap: 4px;
   border-radius: 12px;
+  justify-self: center;
+  margin-top: 64px;
 }
 
 select {
   width: 320px;
   padding: 8px;
   border-radius: 8px;
+}
+
+aside {
+  display: flex;
+  flex-direction: column;
+  font-size: 32px;
+  font-weight: 700;
+  background-color: #411c5250;
+  justify-content: space-between;
+}
+
+aside .header {
+  height: 30px;
+  background-color: #411c52;
+  padding: 16px 0px;
+  color: white;
+}
+
+aside .title {
+  color: white;
+}
+
+aside .top .item {
+  margin: 6px 15px;
+  font-size: 18px;
+  color: white;
+  margin: 16px 6px;
+}
+
+aside .top .item p {
+  margin: 0;
+  font-size: 18px;
+  color: white;
+}
+aside .bottom {
+  text-align: center;
+}
+
+aside .bottom button {
+  margin: 10px;
+  width: 232px;
+  height: 42px;
+  background-color: #411c52;
+  color: white;
+  border: none;
+  border-radius: 12px;
+}
+
+aside .bottom button:hover {
+  cursor: pointer;
+  background-color: #411c5280;
 }
