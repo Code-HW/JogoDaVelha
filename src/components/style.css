@@ -1,0 +1,16 @@
+button:not(.reset){
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 144px;
+    text-transform: uppercase;
+    background-color:#411c52;
+    border: none;
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 214px;
+    height: 214px;
+}
+
+

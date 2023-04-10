@@ -1,0 +1,29 @@
+.container {
+  display: grid;
+
+  place-items: center;
+  grid-gap: 32px;
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  background-color: #411c5280;
+  width: 650px;
+  height: 650px;
+  grid-gap: 4px;
+  border-radius: 12px;
+}
+
+select {
+  width: 320px;
+  padding: 8px;
+  border-radius: 8px;
+}
