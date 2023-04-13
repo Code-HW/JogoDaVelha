@@ -1,4 +1,4 @@
-button:not(.reset){
+button:not(.reset) {
     font-family: 'Josefin Sans', sans-serif;
     font-size: 144px;
     text-transform: uppercase;

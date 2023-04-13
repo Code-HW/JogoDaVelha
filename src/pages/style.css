@@ -6,22 +6,17 @@
 }
 
 .board {
+  margin: auto;
   display: grid;
-  grid-template-columns: repeat(3, auto);
-  background-color: #411c5280;
-  width: 650px;
-  height: 650px;
   grid-gap: 4px;
-  border-radius: 12px;
+  height: fit-content;
+  position: relative;
   justify-self: center;
-  margin-top: 64px;
+  border-radius: 12px;
+  background-color: #411c5280;
+  grid-template-columns: repeat(3, auto);
 }
 
-select {
-  width: 320px;
-  padding: 8px;
-  border-radius: 8px;
-}
 
 aside {
   display: flex;
@@ -33,28 +28,42 @@ aside {
 }
 
 aside .header {
-  height: 30px;
+  padding: 8px 0;
+  color: white;
+  font-size: 32px;
+  height: fit-content;
+  text-align: center;
   background-color: #411c52;
-  padding: 16px 0px;
-  color: white;
-}
-
-aside .title {
-  color: white;
+  font-family: 'Courier New', Courier, monospace;
+   
 }
 
 aside .top .item {
-  margin: 6px 15px;
+  padding: 12px;
   font-size: 18px;
   color: white;
-  margin: 16px 6px;
 }
 
 aside .top .item p {
   margin: 0;
+  padding-bottom: 8px;
   font-size: 18px;
   color: white;
 }
+
+aside .top select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+aside .top select option {
+  width: 100%;
+  height: 30px;
+  padding: 30px;
+  border-radius: 8px;
+}
+
 aside .bottom {
   text-align: center;
 }
@@ -72,4 +81,37 @@ aside .bottom button {
 aside .bottom button:hover {
   cursor: pointer;
   background-color: #411c5280;
+}
+
+.modal {
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 460px;
+  height: 260px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  border-radius: 12px;
+  padding: 12px 24px;
+  flex-direction: column;
+  background-color: white;
+  justify-content: space-around;
+  transform: translate(-50%, -50%);
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+}
+
+.modal p {
+  font-size: 42px;
+  text-align: center;
+}
+
+.modal .close-modal {
+  font-size: 32px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  width: fit-content;
+  height: fit-content;
+  text-transform: lowercase;
 }

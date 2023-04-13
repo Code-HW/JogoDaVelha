@@ -77,22 +77,24 @@ const machinePlay = (board) => {
 function Home() {
   const [player, setPlayer] = useState("X");
   const [board, setBoard] = useState(boardDefaultValues);
+  const [modalText, SetModalText] = useState("");
+  const [colorMessageModal, SetColorMessageModal] = useState("#000000");
 
   const machine = player === "X" ? "O" : "X";
 
   const handleClick = (id) => {
     if (!player) {
-      window.alert("Selecione um jogador!");
+      SetModalText("Selecione um jogador!");
       return;
     }
 
     if (player === board.lastPlayer) {
-      window.alert("Jogada repedida!");
+      SetModalText("Jogada repedida!");
       return;
     }
 
     if (board.fields[id]) {
-      window.alert("Campo ja preenchido!");
+      SetModalText("Campo ja preenchido!");
       return;
     }
 
@@ -136,7 +138,8 @@ function Home() {
         fieldsWiner: result.fields,
       });
 
-      console.log(`O jogador ${result.player} ganhou o jogo!`);
+      SetModalText(`O jogador ${result.player} ganhou o jogo!`);
+      SetColorMessageModal("green");
       return;
     }
 
@@ -146,25 +149,31 @@ function Home() {
         state: false,
         playerWiner: "V",
       });
-      console.log(`O jogo deu velha!`);
+      SetModalText(`O jogo deu velha!`);
+      SetColorMessageModal("red");
       return;
     }
 
     if (board.gameMode === "M" && player === board.lastPlayer) {
       const fieldPlay = machinePlay(board);
-      setBoard({
-        ...board,
-        lastPlayer: machine,
-        fields: { ...board.fields, [fieldPlay]: machine },
-      });
+      const tmr = setTimeout(() => {
+        setBoard({
+          ...board,
+          lastPlayer: machine,
+          fields: { ...board.fields, [fieldPlay]: machine },
+        });
+      }, 400);
+      return () => clearTimeout(tmr);
     }
-  }, [board]);
+  }, [board, modalText]);
 
   return (
     <div className="container">
       <aside className="sidebar">
         <div className="top">
-          <div className="header">Jogo da Velha</div>
+          <div className="header">
+            HwCode <br /> Jogo da Velha
+          </div>
 
           <div className="item">
             <p>Modo de jogo: </p>
@@ -191,13 +200,14 @@ function Home() {
             </select>
           </div>
         </div>
+        <div className="body"></div>
         <div className="bottom">
           <button className="reset" onClick={handleResetBoard}>
             REINICIAR
           </button>
         </div>
       </aside>
-      <div className="board">
+      <div className="board" style={modalText ? { filter: `blur(3px)` } : null}>
         {Object.keys(board.fields).map((key, index) => (
           <Square
             color={
@@ -212,6 +222,14 @@ function Home() {
           />
         ))}
       </div>
+      {modalText ? (
+        <div className="modal">
+          <p style={{ color: colorMessageModal }}>{modalText}</p>
+          <button className="close-modal" onClick={() => SetModalText("")}>
+            close
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }
