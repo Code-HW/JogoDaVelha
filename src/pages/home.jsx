@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Square from "../components/square";
 import "./style.css";
 
@@ -33,23 +33,52 @@ const boardDefaultValues = {
   },
 };
 
-const ramdowPlay = (fields) => {
-  const fildsAvailable = Object.entries(fields).filter(
-    ([key, value]) => value === null
+const getOpposite = (player) => (player === "X" ? "O" : "X");
+
+const getFields = (fields, val) =>
+  Object.keys(
+    Object.fromEntries(
+      Object.entries(fields).filter(([key, value]) => value === val)
+    )
   );
 
-  return fildsAvailable[Math.floor(Math.random() * fildsAvailable.length)][0];
+const ramdowPlay = ({ fildsAvailable }) => {
+  return fildsAvailable[Math.floor(Math.random() * fildsAvailable.length)];
 };
 
-/* const winPlay = (fields) => {
-  const fildsAvailable = Object.entries(fields).filter(
-    ([key, value]) => value === null
-  );
+const checkPreWiner = (fildsAvailable, fildsCheck) => {
+  let field = null;
 
-  return fildsAvailable[Math.floor(Math.random() * fildsAvailable.length)][0];
-}; */
+  winer.forEach(([fieldOne, fieldTwo, fieldThree]) => {
+    const oneCheck = fildsCheck.includes(fieldOne);
+    const TwoCheck = fildsCheck.includes(fieldTwo);
+    const ThreeCheck = fildsCheck.includes(fieldThree);
 
-const machinePlays = [ramdowPlay];
+    if (oneCheck && TwoCheck && fildsAvailable.includes(fieldThree)) {
+      field = fieldThree;
+    }
+
+    if (oneCheck && ThreeCheck && fildsAvailable.includes(fieldTwo)) {
+      field = fieldTwo;
+    }
+
+    if (ThreeCheck && TwoCheck && fildsAvailable.includes(fieldOne)) {
+      field = fieldOne;
+    }
+  });
+
+  return field;
+};
+
+const winPlay = ({ fildsAvailable, fildsPlayer }) => {
+  return checkPreWiner(fildsAvailable, fildsPlayer);
+};
+
+const blockPlay = ({ fildsAvailable, fildsOponent }) => {
+  return checkPreWiner(fildsAvailable, fildsOponent);
+};
+
+const machinePlays = [winPlay, blockPlay, ramdowPlay];
 
 const checkWiner = (board) => {
   const fieldVictory = winer.find(
@@ -66,35 +95,54 @@ const checkWiner = (board) => {
 };
 
 const machinePlay = (board) => {
-  const filedPlay = machinePlays.find((action) => action(board.fields))(
-    board.fields
-  );
+  const player = getOpposite(board.lastPlayer);
+  const fields = {
+    player: player,
+    filds: board.fields,
+    fildsAvailable: getFields(board.fields, null),
+    fildsPlayer: getFields(board.fields, player),
+    fildsOponent: getFields(board.fields, board.lastPlayer),
+  };
+
+  const filedPlay = machinePlays.find((action) => action(fields))(fields);
 
   return filedPlay;
+};
+
+const colors = {
+  v: "red",
+  oponent: "red",
+  player: "green",
 };
 
 //componentizar
 function Home() {
   const [player, setPlayer] = useState("X");
   const [board, setBoard] = useState(boardDefaultValues);
-  const [modalText, SetModalText] = useState("");
-  const [colorMessageModal, SetColorMessageModal] = useState("#000000");
+  const [modalText, setModalText] = useState("");
 
-  const machine = player === "X" ? "O" : "X";
+  const colorWinner =
+    board.playerWiner === "V"
+      ? colors.v
+      : board.playerWiner === player
+      ? colors.player
+      : colors.oponent;
+
+  const machine = getOpposite(player);
 
   const handleClick = (id) => {
     if (!player) {
-      SetModalText("Selecione um jogador!");
+      setModalText("Selecione um jogador!");
       return;
     }
 
     if (player === board.lastPlayer) {
-      SetModalText("Jogada repedida!");
+      setModalText("Jogada repedida!");
       return;
     }
 
     if (board.fields[id]) {
-      SetModalText("Campo ja preenchido!");
+      setModalText("Campo ja preenchido!");
       return;
     }
 
@@ -127,7 +175,7 @@ function Home() {
     const result = checkWiner(board.fields);
 
     if (board.gameMode === "P" && player === board.lastPlayer) {
-      setPlayer(player === "X" ? "O" : "X");
+      setPlayer(machine);
     }
 
     if (result.player) {
@@ -138,8 +186,7 @@ function Home() {
         fieldsWiner: result.fields,
       });
 
-      SetModalText(`O jogador ${result.player} ganhou o jogo!`);
-      SetColorMessageModal("green");
+      setModalText(`O jogador ${result.player} ganhou o jogo!`);
       return;
     }
 
@@ -149,8 +196,7 @@ function Home() {
         state: false,
         playerWiner: "V",
       });
-      SetModalText(`O jogo deu velha!`);
-      SetColorMessageModal("red");
+      setModalText(`O jogo deu velha!`);
       return;
     }
 
@@ -165,7 +211,7 @@ function Home() {
       }, 400);
       return () => clearTimeout(tmr);
     }
-  }, [board, modalText]);
+  }, [board, modalText, machine, player]);
 
   return (
     <div className="container">
@@ -222,16 +268,28 @@ function Home() {
           />
         ))}
       </div>
-      {modalText ? (
-        <div className="modal">
-          <p style={{ color: colorMessageModal }}>{modalText}</p>
-          <button className="close-modal" onClick={() => SetModalText("")}>
-            close
-          </button>
-        </div>
-      ) : null}
+      <Modal
+        text={modalText}
+        color={colorWinner}
+        closeModal={() => setModalText("")}
+      />
     </div>
   );
 }
+
+const Modal = ({ text, color, closeModal }) => {
+  if (text) {
+    return (
+      <div className="modal">
+        <p style={{ color: color }}>{text}</p>
+        <button className="close-modal" onClick={closeModal}>
+          close
+        </button>
+      </div>
+    );
+  }
+
+  return null;
+};
 
 export default Home;
