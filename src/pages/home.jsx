@@ -178,6 +178,8 @@ function Home() {
       setPlayer(machine);
     }
 
+    console.log(colorWinner);
+
     if (result.player) {
       setBoard({
         ...board,
@@ -186,7 +188,17 @@ function Home() {
         fieldsWiner: result.fields,
       });
 
-      setModalText(`O jogador ${result.player} ganhou o jogo!`);
+      if (board.gameMode === "M") {
+        if (result.player === player) {
+          setModalText(`O jogador ${result.player} ganhou!`);
+        } else {
+          setModalText(`A Maquina ganhou!`);
+        }
+      }
+
+      if (board.gameMode === "P") {
+        setModalText(`O jogador ${result.player} ganhou!`);
+      }
       return;
     }
 
